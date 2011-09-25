@@ -17,7 +17,8 @@ Via Clojars: http://clojars.org/commandline-clj
    [b escape "print octal escapes for nongraphic characters"]
    [nil block-size "use SIZE-byte blocks" :integer "SIZE"]
    [B ignore-backups "do not list implied entried ending with ~"]
-   [c nil "with -lt: sort by, and show, ctime (time of last modification of file status information) with -l:show ctime and sort by name otherwise: sort by ctime"]
+   [c nil (str "with -lt: sort by, and show, ctime (time of last modification of file status information) "
+               "with -l:show ctime and sort by name otherwise: sort by ctime")]
    [C nil "list entries by columns"]]
   (print-help "ls"))
 
