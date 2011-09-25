@@ -1,6 +1,7 @@
 (ns commandline.core
   (:import [org.apache.commons.cli BasicParser GnuParser HelpFormatter Option Options PosixParser]
-           java.io.PrintWriter))
+           java.io.PrintWriter)
+  (:use [clj-time.format :only (parse)]))
 
 (def ^:dynamic *columns*
   (try (Integer/parseInt (System/getenv "COLUMNS"))
@@ -12,8 +13,8 @@
   (into-array (if (or (nil? arguments) (empty? arguments)) [""] arguments)))
 
 (defn- flatten-options [options]
-  (->> (for [[opt long-opt & rest] options]
-         [(concat [opt] rest) (concat [long-opt] rest)])
+  (->> (for [[opt long & rest] options]
+         [(concat [opt] rest) (concat [long] rest)])
        (apply concat)
        (remove #(nil? (first %)))))
 
@@ -27,8 +28,8 @@
 
 (defn make-option
   "Make an option."
-  [opt long-opt description & [type arg-name required]]
-  (doto (Option. (if opt (name opt)) (if long-opt (name long-opt)) (if (or type arg-name) true false) description)
+  [opt long description & [type arg-name required]]
+  (doto (Option. (if opt (name opt)) (if long (name long)) (if (or type arg-name) true false) description)
     (.setArgName arg-name)
     (.setRequired (or required false))))
 
@@ -56,6 +57,9 @@
 (defmethod parse-argument :integer [type argument]
   (if argument (Integer/parseInt argument)))
 
+(defmethod parse-argument :time [type argument]
+  (if argument (parse argument)))
+
 (defmethod parse-argument :default [type argument]
   argument)
 
@@ -72,10 +76,16 @@
     (.printUsage (HelpFormatter.) (PrintWriter. *out*) width program *options*)))
 
 (defn- option-bindings [commandline options]
-  (->> (for [[opt description type arg-name required] (flatten-options options)]
-         `[~opt ~(if (or type arg-name)
-                   `(parse-argument ~type (.getOptionValue ~commandline ~(str opt)))
-                   `(.hasOption ~commandline ~(str opt)))])
+  (->> (for [[opt long description type arg-name required] options
+             :let [value# (gensym "opt")]]
+         (concat
+          [value# (if (or type arg-name)
+                    `(or (parse-argument ~type (.getOptionValue ~commandline ~(str opt)))
+                         ~(if long `(parse-argument ~type (.getOptionValue ~commandline ~(str long)))))
+                    `(or (.hasOption ~commandline ~(str opt))
+                         (.hasOption ~commandline ~(str long))))]
+          (if opt [opt value#])
+          (if long [long value#])))
        (apply concat)))
 
 (defmacro with-options
@@ -89,11 +99,11 @@
         options# options]
     `(with-options
        (doto (Options.)
-         ~@(for [[opt# long-opt# description# type# arg-name# required#] options#]
+         ~@(for [[opt# long# description# type# arg-name# required#] options#]
              `(.addOption
                (make-option
                 ~(if opt# (str opt#))
-                ~(if long-opt# (str long-opt#))
+                ~(if long# (str long#))
                 ~description#
                 ~type#
                 ~arg-name#
