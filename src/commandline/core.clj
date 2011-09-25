@@ -84,7 +84,7 @@
 
 (defmacro with-commandline
   "Evaluate body with commandline arguments bound to their names."
-  [parser name arguments options & body]
+  [[arguments & [name parser]] options & body]
   (let [commandline# (gensym "commandline")
         options# options]
     `(with-options
@@ -98,7 +98,7 @@
                 ~type#
                 ~arg-name#
                 ~required#))))
-       (let [~commandline# (.parse (make-parser ~parser) *options* (coerce-arguments ~arguments))
-             ~name (seq (.getArgs ~commandline#))
+       (let [~commandline# (.parse (make-parser ~(or parser :gnu)) *options* (coerce-arguments ~arguments))
+             ~(or name ~'arguments) (seq (.getArgs ~commandline#))
              ~@(option-bindings commandline# options#)]
          ~@body))))
