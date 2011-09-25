@@ -41,7 +41,7 @@
        (apply concat)
        (remove #(nil? (first %)))))
 
-(defn- argument-bindings [command-line options]
+(defn- option-bindings [command-line options]
   (->> (for [[opt description type arg-name required] (flatten-options options)]
          `[~opt ~(if (or type arg-name)
                    `(parse-argument ~type (.getOptionValue ~command-line ~(str opt)))
@@ -106,5 +106,5 @@
        [~@options#]
        (with-options ~name#
          (let [~command-line# (.parse (make-parser ~parser) ~name# (into-array ~(if (or (nil? args#) (empty? args#)) [""] args#)))
-               ~@(argument-bindings command-line# options#)]
+               ~@(option-bindings command-line# options#)]
            ~@body)))))
