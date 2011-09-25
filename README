@@ -18,7 +18,7 @@ Via Clojars: http://clojars.org/commandline-clj
    [nil block-size "use SIZE-byte blocks" :integer "SIZE"]
    [B ignore-backups "do not list implied entried ending with ~"]
    [c nil (str "with -lt: sort by, and show, ctime (time of last modification of file status information)\n"
-               "with -l:show ctime and sort by name otherwise: sort by ctime")]
+               "with -l:  show ctime and sort by name otherwise: sort by ctime")]
    [C nil "list entries by columns"]]
   (assert (= ["FILE"] arguments))
   (print-help "ls"))
@@ -30,7 +30,7 @@ Via Clojars: http://clojars.org/commandline-clj
 ;=>   -B,--ignore-backups     do not list implied entried ending with ~
 ;=>      --block-size <SIZE>  use SIZE-byte blocks
 ;=>   -c                      with -lt: sort by, and show, ctime (time of last modification of file status information)
-;=>                           with -l:show ctime and sort by name otherwise: sort by ctime
+;=>                           with -l:  show ctime and sort by name otherwise: sort by ctime
 ;=>                           ctime and sort by name otherwise: sort by ctime
 ;=>   -C                      list entries by columns
 
