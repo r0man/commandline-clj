@@ -41,6 +41,9 @@
        (apply concat)
        (remove #(nil? (first %)))))
 
+(defn coerce-arguments [arguments]
+  (into-array (if (or (nil? arguments) (empty? arguments)) [""] arguments)))
+
 (defn- option-bindings [commandline options]
   (->> (for [[opt description type arg-name required] (flatten-options options)]
          `[~opt ~(if (or type arg-name)
@@ -83,7 +86,6 @@
   "Evaluate body with commandline arguments bound to their names."
   [parser arguments options & body]
   (let [commandline# (gensym "commandline")
-        arguments# arguments
         options# options]
     `(with-options
        (doto (Options.)
@@ -96,7 +98,6 @@
                 ~type#
                 ~arg-name#
                 ~required#))))
-       (let [arguments# (into-array ~(if (or (nil? arguments#) (empty? arguments#)) [""] arguments#))
-             ~commandline# (.parse (make-parser ~parser) *options* arguments#)
+       (let [~commandline# (.parse (make-parser ~parser) *options* (coerce-arguments ~arguments))
              ~@(option-bindings commandline# options#)]
          ~@body))))
