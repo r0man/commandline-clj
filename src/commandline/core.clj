@@ -2,11 +2,38 @@
   (:import [org.apache.commons.cli BasicParser GnuParser HelpFormatter Option Options PosixParser]
            java.io.PrintWriter))
 
-(def ^:dynamic *options* nil)
-
 (def ^:dynamic *columns*
   (try (Integer/parseInt (System/getenv "COLUMNS"))
        (catch Exception _ 80)))
+
+(def ^:dynamic *options* nil)
+
+(defmulti parse-argument
+  (fn [type argument] type))
+
+(defmethod parse-argument :boolean [type argument]
+  (if argument (Boolean/parseBoolean argument)))
+
+(defmethod parse-argument :character [type argument]
+  (if argument (first argument)))
+
+(defmethod parse-argument :class [type argument]
+  (if argument (Class/forName argument)))
+
+(defmethod parse-argument :double [type argument]
+  (if argument (Double/parseDouble argument)))
+
+(defmethod parse-argument :float [type argument]
+  (if argument (Float/parseFloat argument)))
+
+(defmethod parse-argument :file [type argument]
+  (if argument (java.io.File. argument)))
+
+(defmethod parse-argument :integer [type argument]
+  (if argument (Integer/parseInt argument)))
+
+(defmethod parse-argument :default [type argument]
+  argument)
 
 (defn- flatten-options [options]
   (->> (for [[opt long-opt & rest] options]
@@ -14,23 +41,12 @@
        (apply concat)
        (remove #(nil? (first %)))))
 
-(defn- command-line-bindings [command-line options]
-  (apply
-   concat
-   (for [[opt description arg-type arg-name required] (flatten-options options)]
-     `[~opt
-       ~(if (or arg-type arg-name)
-          `(~(cond
-              (= arg-type :boolean) #(if % (Boolean/parseBoolean %))
-              (= arg-type :character) #(if % first)
-              (= arg-type :class) #(if % (Class/forName %))
-              (= arg-type :double) #(if % (Double/parseDouble %))
-              (= arg-type :float) #(if % (Float/parseFloat %))
-              (= arg-type :file) #(if % (java.io.File. %))
-              (= arg-type :integer) #(if % (Integer/parseInt %))
-              :else identity)
-            (.getOptionValue ~command-line ~(str opt)))
-          `(.hasOption ~command-line ~(str opt)))])))
+(defn- argument-bindings [command-line options]
+  (->> (for [[opt description type arg-name required] (flatten-options options)]
+         `[~opt ~(if (or type arg-name)
+                   `(parse-argument ~type (.getOptionValue ~command-line ~(str opt)))
+                   `(.hasOption ~command-line ~(str opt)))])
+       (apply concat)))
 
 (defn make-parser
   "Make a basic, gnu or posix parser."
@@ -42,8 +58,8 @@
 
 (defn make-option
   "Make an option."
-  [opt long-opt description & [arg-type arg-name required]]
-  (doto (Option. (if opt (name opt)) (if long-opt (name long-opt)) (if (or arg-type arg-name) true false) description)
+  [opt long-opt description & [type arg-name required]]
+  (doto (Option. (if opt (name opt)) (if long-opt (name long-opt)) (if (or type arg-name) true false) description)
     (.setArgName arg-name)
     (.setRequired (or required false))))
 
@@ -64,13 +80,13 @@
   [name options & body]
   `(let [~name
          (doto (Options.)
-           ~@(for [[opt# long-opt# description# arg-type# arg-name# required#] options]
+           ~@(for [[opt# long-opt# description# type# arg-name# required#] options]
                `(.addOption
                  (make-option
                   ~(if opt# (str opt#))
                   ~(if long-opt# (str long-opt#))
                   ~description#
-                  ~arg-type#
+                  ~type#
                   ~arg-name#
                   ~required#))))]
      ~@body))
@@ -90,5 +106,5 @@
        [~@options#]
        (with-options ~name#
          (let [~command-line# (.parse (make-parser ~parser) ~name# (into-array ~(if (or (nil? args#) (empty? args#)) [""] args#)))
-               ~@(command-line-bindings command-line# options#)]
+               ~@(argument-bindings command-line# options#)]
            ~@body)))))
