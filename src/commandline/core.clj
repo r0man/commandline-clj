@@ -109,6 +109,6 @@
                 ~arg-name#
                 ~required#))))
        (let [~commandline# (.parse (make-parser ~(or parser :gnu)) *options* (coerce-arguments ~arguments))
-             ~(or name ~'arguments) (seq (.getArgs ~commandline#))
+             ~(or name 'arguments) (seq (.getArgs ~commandline#))
              ~@(option-bindings commandline# options#)]
          ~@body))))
