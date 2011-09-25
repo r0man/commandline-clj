@@ -11,7 +11,7 @@ Via Clojars: http://clojars.org/commandline-clj
 
 (require 'commandline.core)
 
-(with-commandline :gnu ["-a" "--all" "-A" "--almost-all" "-b" "--escape" "--block-size" "10" "-c"]
+(with-commandline :gnu arguments ["-a" "--all" "-A" "--almost-all" "-b" "--escape" "--block-size" "10" "-c"]
   [[a all "do not hide entries starting with ."]
    [A almost-all "do not list implied . and .."]
    [b escape "print octal escapes for nongraphic characters"]
