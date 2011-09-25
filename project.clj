@@ -5,6 +5,6 @@
             :web-src-dir "http://github.com/r0man/commandline-clj/blob/"
             :web-home "http://github.com/r0man/commandline-clj"
             :copyright "Copyright (c) 2011 Roman Scherer"}
-  :url "http://github.com/r0man/commandline-clj"
+  :url "https://github.com/r0man/commandline-clj"
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [commons-cli/commons-cli "1.2"]])
