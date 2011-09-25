@@ -8,6 +8,30 @@
 
 (def ^:dynamic *options* nil)
 
+(defn coerce-arguments [arguments]
+  (into-array (if (or (nil? arguments) (empty? arguments)) [""] arguments)))
+
+(defn- flatten-options [options]
+  (->> (for [[opt long-opt & rest] options]
+         [(concat [opt] rest) (concat [long-opt] rest)])
+       (apply concat)
+       (remove #(nil? (first %)))))
+
+(defn make-parser
+  "Make a basic, gnu or posix parser."
+  [type]
+  (case type
+    :basic (BasicParser.)
+    :gnu (GnuParser.)
+    :posix (PosixParser.)))
+
+(defn make-option
+  "Make an option."
+  [opt long-opt description & [type arg-name required]]
+  (doto (Option. (if opt (name opt)) (if long-opt (name long-opt)) (if (or type arg-name) true false) description)
+    (.setArgName arg-name)
+    (.setRequired (or required false))))
+
 (defmulti parse-argument
   (fn [type argument] type))
 
@@ -35,37 +59,6 @@
 (defmethod parse-argument :default [type argument]
   argument)
 
-(defn- flatten-options [options]
-  (->> (for [[opt long-opt & rest] options]
-         [(concat [opt] rest) (concat [long-opt] rest)])
-       (apply concat)
-       (remove #(nil? (first %)))))
-
-(defn coerce-arguments [arguments]
-  (into-array (if (or (nil? arguments) (empty? arguments)) [""] arguments)))
-
-(defn- option-bindings [commandline options]
-  (->> (for [[opt description type arg-name required] (flatten-options options)]
-         `[~opt ~(if (or type arg-name)
-                   `(parse-argument ~type (.getOptionValue ~commandline ~(str opt)))
-                   `(.hasOption ~commandline ~(str opt)))])
-       (apply concat)))
-
-(defn make-parser
-  "Make a basic, gnu or posix parser."
-  [type]
-  (case type
-    :basic (BasicParser.)
-    :gnu (GnuParser.)
-    :posix (PosixParser.)))
-
-(defn make-option
-  "Make an option."
-  [opt long-opt description & [type arg-name required]]
-  (doto (Option. (if opt (name opt)) (if long-opt (name long-opt)) (if (or type arg-name) true false) description)
-    (.setArgName arg-name)
-    (.setRequired (or required false))))
-
 (defn print-help
   "Print the help for *options* with the specified command line syntax."
   [syntax & {:keys [header footer pad-left pad-desc width]}]
@@ -77,6 +70,13 @@
   [program & {:keys [width]}]
   (let [width (or width *columns*)]
     (.printUsage (HelpFormatter.) (PrintWriter. *out*) width program *options*)))
+
+(defn- option-bindings [commandline options]
+  (->> (for [[opt description type arg-name required] (flatten-options options)]
+         `[~opt ~(if (or type arg-name)
+                   `(parse-argument ~type (.getOptionValue ~commandline ~(str opt)))
+                   `(.hasOption ~commandline ~(str opt)))])
+       (apply concat)))
 
 (defmacro with-options
   "Evaluate body with *options* bound to options."
