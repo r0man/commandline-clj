@@ -67,13 +67,15 @@
   "Print the help for *options* with the specified command line syntax."
   [syntax & {:keys [header footer pad-left pad-desc width]}]
   (let [width (or width *columns*)]
-    (.printHelp (HelpFormatter.) (PrintWriter. *out*) width syntax header *options* (or pad-left 2) (or pad-desc 2) footer)))
+    (.printHelp (HelpFormatter.) (PrintWriter. *out*) width syntax header *options* (or pad-left 2) (or pad-desc 2) footer)
+    (.flush *out*)))
 
 (defn print-usage
   "Prints the usage statement for *options* and the specified application."
   [program & {:keys [width]}]
   (let [width (or width *columns*)]
-    (.printUsage (HelpFormatter.) (PrintWriter. *out*) width program *options*)))
+    (.printUsage (HelpFormatter.) (PrintWriter. *out*) width program *options*)
+    (.flush *out*)))
 
 (defn- option-bindings [commandline options]
   (->> (for [[opt long description type arg-name required] options
