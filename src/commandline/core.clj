@@ -41,11 +41,11 @@
        (apply concat)
        (remove #(nil? (first %)))))
 
-(defn- option-bindings [command-line options]
+(defn- option-bindings [commandline options]
   (->> (for [[opt description type arg-name required] (flatten-options options)]
          `[~opt ~(if (or type arg-name)
-                   `(parse-argument ~type (.getOptionValue ~command-line ~(str opt)))
-                   `(.hasOption ~command-line ~(str opt)))])
+                   `(parse-argument ~type (.getOptionValue ~commandline ~(str opt)))
+                   `(.hasOption ~commandline ~(str opt)))])
        (apply concat)))
 
 (defn make-parser
@@ -75,36 +75,28 @@
   (let [width (or width *columns*)]
     (.printUsage (HelpFormatter.) (PrintWriter. *out*) width program *options*)))
 
-(defmacro with-commandline-options
-  "Evaluate body with command line options bound to name."
-  [name options & body]
-  `(let [~name
-         (doto (Options.)
-           ~@(for [[opt# long-opt# description# type# arg-name# required#] options]
-               `(.addOption
-                 (make-option
-                  ~(if opt# (str opt#))
-                  ~(if long-opt# (str long-opt#))
-                  ~description#
-                  ~type#
-                  ~arg-name#
-                  ~required#))))]
-     ~@body))
-
 (defmacro with-options
   "Evaluate body with *options* bound to options."
   [options & body] `(binding [*options* ~options] ~@body))
 
 (defmacro with-commandline
   "Evaluate body with commandline arguments bound to their names."
-  [parser args options & body]
-  (let [command-line# (gensym "command-line")
-        args# args
+  [parser arguments options & body]
+  (let [commandline# (gensym "commandline")
+        arguments# arguments
         name# (gensym "options")
         options# options]
-    `(with-commandline-options ~name#
-       [~@options#]
-       (with-options ~name#
-         (let [~command-line# (.parse (make-parser ~parser) ~name# (into-array ~(if (or (nil? args#) (empty? args#)) [""] args#)))
-               ~@(option-bindings command-line# options#)]
-           ~@body)))))
+    `(let [~name# (doto (Options.)
+                    ~@(for [[opt# long-opt# description# type# arg-name# required#] options#]
+                        `(.addOption
+                          (make-option
+                           ~(if opt# (str opt#))
+                           ~(if long-opt# (str long-opt#))
+                           ~description#
+                           ~type#
+                           ~arg-name#
+                           ~required#))))
+           arguments# (into-array ~(if (or (nil? arguments#) (empty? arguments#)) [""] arguments#))
+           ~commandline# (.parse (make-parser ~parser) ~name# arguments#)
+           ~@(option-bindings commandline# options#)]
+       (with-options ~name# ~@body))))
