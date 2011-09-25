@@ -84,19 +84,19 @@
   [parser arguments options & body]
   (let [commandline# (gensym "commandline")
         arguments# arguments
-        name# (gensym "options")
         options# options]
-    `(let [~name# (doto (Options.)
-                    ~@(for [[opt# long-opt# description# type# arg-name# required#] options#]
-                        `(.addOption
-                          (make-option
-                           ~(if opt# (str opt#))
-                           ~(if long-opt# (str long-opt#))
-                           ~description#
-                           ~type#
-                           ~arg-name#
-                           ~required#))))
-           arguments# (into-array ~(if (or (nil? arguments#) (empty? arguments#)) [""] arguments#))
-           ~commandline# (.parse (make-parser ~parser) ~name# arguments#)
-           ~@(option-bindings commandline# options#)]
-       (with-options ~name# ~@body))))
+    `(with-options
+       (doto (Options.)
+         ~@(for [[opt# long-opt# description# type# arg-name# required#] options#]
+             `(.addOption
+               (make-option
+                ~(if opt# (str opt#))
+                ~(if long-opt# (str long-opt#))
+                ~description#
+                ~type#
+                ~arg-name#
+                ~required#))))
+       (let [arguments# (into-array ~(if (or (nil? arguments#) (empty? arguments#)) [""] arguments#))
+             ~commandline# (.parse (make-parser ~parser) *options* arguments#)
+             ~@(option-bindings commandline# options#)]
+         ~@body))))
