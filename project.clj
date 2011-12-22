@@ -7,5 +7,5 @@
             :copyright "Copyright (c) 2011 Roman Scherer"}
   :url "https://github.com/r0man/commandline-clj"
   :dependencies [[commons-cli/commons-cli "1.2"]
-                 [clj-time "0.3.0"]
+                 [clj-time "0.3.3"]
                  [org.clojure/clojure "1.3.0"]])
