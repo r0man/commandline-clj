@@ -57,6 +57,9 @@
 (defmethod parse-argument :integer [type argument]
   (if argument (Integer/parseInt argument)))
 
+(defmethod parse-argument :long [type argument]
+  (if argument (Long/parseLong argument)))
+
 (defmethod parse-argument :time [type argument]
   (if argument (parse argument)))
 
@@ -96,7 +99,7 @@
 
 (defmacro with-commandline
   "Evaluate body with commandline arguments bound to their names."
-  [[arguments & [name parser]] options & body]
+  [[binding arguments & [parser]] options & body]
   (let [commandline# (gensym "commandline")
         options# options]
     `(with-options
@@ -111,6 +114,6 @@
                 ~arg-name#
                 ~required#))))
        (let [~commandline# (.parse (make-parser ~(or parser :gnu)) *options* (coerce-arguments ~arguments))
-             ~(or name 'arguments) (seq (.getArgs ~commandline#))
+             ~binding (seq (.getArgs ~commandline#))
              ~@(option-bindings commandline# options#)]
          ~@body))))
