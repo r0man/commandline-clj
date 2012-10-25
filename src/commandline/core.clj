@@ -10,7 +10,7 @@
 (def ^:dynamic *options* nil)
 
 (defn coerce-arguments [arguments]
-  (into-array (if (or (nil? arguments) (empty? arguments)) [""] arguments)))
+  (into-array String (map str (or arguments []))))
 
 (defn- flatten-options [options]
   (->> (for [[opt long & rest] options]
@@ -102,17 +102,16 @@
   [[binding arguments & [parser]] options & body]
   (let [commandline# (gensym "commandline")
         options# options]
-    `(with-options
-       (doto (Options.)
-         ~@(for [[opt# long# description# type# arg-name# required#] options#]
-             `(.addOption
-               (make-option
-                ~(if opt# (str opt#))
-                ~(if long# (str long#))
-                ~description#
-                ~type#
-                ~arg-name#
-                ~required#))))
+    `(with-options (doto (Options.)
+                     ~@(for [[opt# long# description# type# arg-name# required#] options#]
+                         `(.addOption
+                           (make-option
+                            ~(if opt# (str opt#))
+                            ~(if long# (str long#))
+                            ~description#
+                            ~type#
+                            ~arg-name#
+                            ~required#))))
        (let [~commandline# (.parse (make-parser ~(or parser :gnu)) *options* (coerce-arguments ~arguments))
              ~binding (seq (.getArgs ~commandline#))
              ~@(option-bindings commandline# options#)]
