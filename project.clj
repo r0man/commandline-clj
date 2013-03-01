@@ -6,4 +6,4 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[clj-time "0.4.4"]
                  [commons-cli/commons-cli "1.2"]
-                 [org.clojure/clojure "1.4.0"]])
+                 [org.clojure/clojure "1.5.0"]])
