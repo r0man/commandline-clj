@@ -1,7 +1,8 @@
 (ns commandline.core
   (:import [org.apache.commons.cli BasicParser GnuParser HelpFormatter Option Options PosixParser]
            java.io.PrintWriter)
-  (:require [clj-time.format :refer [parse]]))
+  (:require [clj-time.format :refer [parse]]
+            [clojure.string :refer [split]]))
 
 (def ^:dynamic *columns*
   (try (Integer/parseInt (System/getenv "COLUMNS"))
@@ -33,6 +34,13 @@
     (.setArgName arg-name)
     (.setRequired (or required false))))
 
+(defn parse-ids
+  "Parse a list of ids."
+  [s]
+  (->> (split (str s) #"\s*,\s*")
+       (map #(Long/parseLong %1))
+       (remove nil?)))
+
 (defmulti parse-argument
   (fn [type argument] type))
 
@@ -57,8 +65,14 @@
 (defmethod parse-argument :integer [type argument]
   (if argument (Integer/parseInt argument)))
 
+(defmethod parse-argument :integers [type argument]
+  (if argument (parse-ids argument)))
+
 (defmethod parse-argument :long [type argument]
   (if argument (Long/parseLong argument)))
+
+(defmethod parse-argument :longs [type argument]
+  (if argument (parse-ids argument)))
 
 (defmethod parse-argument :time [type argument]
   (if argument (parse argument)))
