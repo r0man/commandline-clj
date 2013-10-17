@@ -1,7 +1,7 @@
 (ns commandline.core
   (:import [org.apache.commons.cli BasicParser GnuParser HelpFormatter Option Options PosixParser]
            java.io.PrintWriter)
-  (:use [clj-time.format :only (parse)]))
+  (:require [clj-time.format :refer [parse]]))
 
 (def ^:dynamic *columns*
   (try (Integer/parseInt (System/getenv "COLUMNS"))
