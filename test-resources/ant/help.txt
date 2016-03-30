@@ -1,0 +1,12 @@
+usage: ant
+  -buildfile <file>      use given buildfile
+  -debug                 print debugging information
+  -emacs                 produce logging information without adornments
+  -help                  print this message
+  -listener <classname>  add an instance of class as a project listener
+  -logfile <file>        use given file for log
+  -logger <classname>    the class which is to perform logging
+  -projecthelp           print project help information
+  -quiet                 be extra quiet
+  -verbose               be extra verbose
+  -version               print the version information and exit

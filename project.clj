@@ -4,6 +4,11 @@
   :url "https://github.com/r0man/commandline-clj"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[clj-time "0.7.0"]
-                 [commons-cli/commons-cli "1.2"]
-                 [org.clojure/clojure "1.6.0"]])
+  :dependencies [[clj-time "0.11.0"]
+                 [commons-cli/commons-cli "1.3.1"]
+                 [org.clojure/clojure "1.8.0"]]
+  :aliases {"lint" ["do" ["eastwood"]]
+            "ci" ["do" ["difftest"] ["lint"]]}
+  :eastwood {:exclude-linters [:suspicious-expression]}
+  :profiles {:provided {:plugins [[jonase/eastwood "0.2.3"]
+                                  [lein-difftest "2.0.0"]]}})

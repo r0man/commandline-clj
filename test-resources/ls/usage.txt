@@ -1,0 +1,2 @@
+usage: ls [-a] [-A] [-b] [-B] [--block-size <SIZE>] [-c] [-C] [-I <IDS>] [-t
+       <arg>]

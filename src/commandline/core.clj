@@ -30,7 +30,10 @@
 (defn make-option
   "Make an option."
   [opt long description & [type arg-name required]]
-  (doto (Option. (if opt (name opt)) (if long (name long)) (if (or type arg-name) true false) description)
+  (doto (Option. (if opt (name opt))
+                 (if long (name long))
+                 (if (or type arg-name) true false)
+                 description)
     (.setArgName arg-name)
     (.setRequired (or required false))))
 
@@ -116,16 +119,17 @@
   [[binding arguments & [parser]] options & body]
   (let [commandline# (gensym "commandline")
         options# options]
-    `(with-options (doto (Options.)
-                     ~@(for [[opt# long# description# type# arg-name# required#] options#]
-                         `(.addOption
-                           (make-option
-                            ~(if opt# (str opt#))
-                            ~(if long# (str long#))
-                            ~description#
-                            ~type#
-                            ~arg-name#
-                            ~required#))))
+    `(with-options
+       (doto (Options.)
+         ~@(for [[opt# long# description# type# arg-name# required#] options#]
+             `(.addOption
+               (make-option
+                ~(if opt# (str opt#))
+                ~(if long# (str long#))
+                ~description#
+                ~type#
+                ~arg-name#
+                ~required#))))
        (let [~commandline# (.parse (make-parser ~(or parser :gnu)) *options* (coerce-arguments ~arguments))
              ~binding (seq (.getArgs ~commandline#))
              ~@(option-bindings commandline# options#)]
