@@ -1,4 +1,4 @@
-(defproject commandline-clj "0.1.8"
+(defproject commandline-clj "0.1.9-SNAPSHOT"
   :description "Clojure command line parsing library."
   :min-lein-version "2.0.0"
   :url "https://github.com/r0man/commandline-clj"
