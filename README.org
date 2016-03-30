@@ -8,6 +8,8 @@
   A Clojure wrapper around the Apache Commons CLI command line parsing
   library. See: http://commons.apache.org/cli/index.html
 
+  [[https://xkcd.com/1168][https://imgs.xkcd.com/comics/tar.png]]
+
 ** Usage
 
    #+BEGIN_SRC clojure :exports code :results silent
