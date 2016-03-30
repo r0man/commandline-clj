@@ -1,0 +1,13 @@
+usage: ls
+  -a,--all                do not hide entries starting with .
+  -A,--almost-all         do not list implied . and ..
+  -b,--escape             print octal escapes for nongraphic characters
+  -B,--ignore-backups     do not list implied entried ending with ~
+     --block-size <SIZE>  use SIZE-byte blocks
+  -c                      with -lt: sort by, and show, ctime (time of last
+                          modification of file status information)
+                          with -l:  show ctime and sort by name otherwise: sort
+                          by ctime
+  -C                      list entries by columns
+  -I,--ids <IDS>          list of integers
+  -t,--time <arg>         the time
