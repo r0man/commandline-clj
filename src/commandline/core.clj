@@ -51,6 +51,9 @@
 (defmethod parse-argument :integers [type argument]
   (if argument (parse-comma-separated argument #(Integer/parseInt %))))
 
+(defmethod parse-argument :keyword [type argument]
+  (if argument (keyword argument)))
+
 (defmethod parse-argument :long [type argument]
   (if argument (Long/parseLong argument)))
 

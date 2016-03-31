@@ -155,6 +155,7 @@
          (parse "20110925T164527.395Z")))
   (is (= (parse-argument :time "2011-09-25")
          (parse "2011-09-25")))
+  (is (= (parse-argument :keyword "kw") :kw))
   (let [result (parse-argument :integers "1,2,3")]
     (is (= result [1 2 3]))
     (is (every? #(= (class %) Integer) result)))
