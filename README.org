@@ -5,7 +5,7 @@
   [[http://jarkeeper.com/r0man/commandline-clj][http://jarkeeper.com/r0man/commandline-clj/status.svg]]
   [[http://jarkeeper.com/r0man/commandline-clj][https://jarkeeper.com/r0man/commandline-clj/downloads.svg]]
 
-  A Clojure wrapper for the [[https://commons.apache.org/proper/commons-cli/index.html][Apache Commons CLI]] library.
+  Parse command line options in [[https://clojure.org][Clojure]] via [[https://commons.apache.org/proper/commons-cli/index.html][Apache Commons CLI]].
 
   [[https://xkcd.com/1168][https://imgs.xkcd.com/comics/tar.png]]
 
