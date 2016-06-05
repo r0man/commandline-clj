@@ -162,3 +162,11 @@
   (let [result (parse-argument :longs "1,2,3")]
     (is (= result [1 2 3]))
     (is (every? #(= (class %) Long ) result))))
+
+(deftest test-parse-argument-doubles
+  (is (= (parse-argument :doubles "1.1,2.2")
+         [(double 1.1) (double 2.2)])))
+
+(deftest test-parse-argument-floats
+  (is (= (parse-argument :floats "1.1,2.2")
+         [(float 1.1) (float 2.2)])))

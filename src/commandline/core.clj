@@ -39,8 +39,14 @@
 (defmethod parse-argument :double [type argument]
   (if argument (Double/parseDouble argument)))
 
+(defmethod parse-argument :doubles [type argument]
+  (if argument (parse-comma-separated argument #(Double/parseDouble %))))
+
 (defmethod parse-argument :float [type argument]
   (if argument (Float/parseFloat argument)))
+
+(defmethod parse-argument :floats [type argument]
+  (if argument (parse-comma-separated argument #(Float/parseFloat %))))
 
 (defmethod parse-argument :file [type argument]
   (if argument (java.io.File. argument)))
