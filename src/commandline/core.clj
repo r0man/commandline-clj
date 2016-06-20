@@ -69,6 +69,9 @@
 (defmethod parse-argument :time [type argument]
   (if argument (parse argument)))
 
+(defmethod parse-argument :strings [type argument]
+  (if argument (parse-comma-separated argument identity)))
+
 (defmethod parse-argument :default [type argument]
   argument)
 
