@@ -95,15 +95,12 @@
        [listener nil "add an instance of class as a project listener" :class "classname"]
        [buildfile nil "use given buildfile" :file "file"]]
       (is (= options
-             {:buildfile nil
-              :debug true
+             {:debug true
               :emacs true
               :help true
-              :listener nil
               :logfile (io/file "logfile")
               :logger java.util.logging.Logger
               :projecthelp true
-              :quiet false
               :verbose true
               :version true}))
       (is (= (with-out-str (print-usage "ant"))
@@ -129,18 +126,13 @@
        [I ids "list of integers" :integers "IDS"]]
       (is (= options
              {:A true
-              :B false
-              :C false
               :I [1 2 3]
               :a true
               :all true
               :almost-all true
-              :b false
               :block-size 10
               :c true
-              :escape false
               :ids [1 2 3]
-              :ignore-backups false
               :t (parse "2011-09-25T16:45:00.000Z")
               :time (parse "2011-09-25T16:45:00.000Z")}))
       (is (= file "FILE"))

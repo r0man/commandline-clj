@@ -126,9 +126,9 @@
                     (parse-argument type (.getOptionValue commandline %))
                     (.hasOption commandline %))]
        (cond-> options
-         long
+         (and long (value long))
          (assoc (keyword long) (value long))
-         short
+         (and short (value short))
          (assoc (keyword short) (value short)))))
    {} option-maps))
 
