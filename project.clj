@@ -5,11 +5,11 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :deploy-repositories [["releases" :clojars]]
-  :dependencies [[clj-time "0.12.0"]
-                 [commons-cli/commons-cli "1.3.1"]
-                 [org.clojure/clojure "1.8.0"]]
+  :dependencies [[clj-time "0.15.2"]
+                 [commons-cli/commons-cli "1.4"]
+                 [org.clojure/clojure "1.10.1"]]
   :aliases {"lint" ["do" ["eastwood"]]
             "ci" ["do" ["difftest"] ["lint"]]}
   :eastwood {:exclude-linters [:suspicious-expression]}
-  :profiles {:provided {:plugins [[jonase/eastwood "0.2.3"]
+  :profiles {:provided {:plugins [[jonase/eastwood "0.3.6"]
                                   [lein-difftest "2.0.0"]]}})
